@@ -1,0 +1,39 @@
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const config = require('./config/database');
+
+// Connect To Database
+mongoose.Promise = require('bluebird');
+mongoose.connect(config.database, { useMongoClient: true, promiseLibrary: require('bluebird') })
+  .then(() => console.log(`Connected to database ${config.database}`))
+  .catch((err) => console.log(`Database error: ${err}`));
+
+const app = express();
+
+// Import Route
+const users = require('./routes/users');
+
+// Port Number
+const port = 3000;
+
+// CORS Middleware
+app.use(cors());
+
+// Body Parser Middleware
+app.use(bodyParser.json());
+
+// API
+app.use('/users', users);
+
+// Index Route
+app.get('/', (req, res) => {
+  res.send('Invalid Endpoint');
+});
+
+// Start Server
+app.listen(port, () => {
+  console.log('Server started on port '+port);
+});
